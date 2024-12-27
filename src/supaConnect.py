@@ -71,7 +71,7 @@ def uploadToSupa():
         try:
             response = supabase.storage.from_(BUCKET_NAME).upload(
                 file=f,
-                path=auctionsFileName,
+                path="aggregation_range.json",
                 file_options={"cache-control": "3600", "upsert": UPSERT},
             )
             logger.info(response)

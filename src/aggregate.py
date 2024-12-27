@@ -33,9 +33,7 @@ def main(start_date = datetime, end_date = datetime):
         logger.info(f"Last Access Date (Tirana TZ): {lastModifiedDate_local}")
         logger.info(f"Time elapsed: ~{int(distanceFromAccessTime / 3600)}hrs")
         
-        #TODO change back
-        # CONTINUE_AGGREGATION = collectionWasAccessedB4Today
-        CONTINUE_AGGREGATION = True
+        CONTINUE_AGGREGATION = collectionWasAccessedB4Today
             
     except FileNotFoundError:
         logger.info("An auction collection file is not present.")    
