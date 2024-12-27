@@ -33,7 +33,8 @@ def main(start_date = datetime, end_date = datetime):
         logger.info(f"Last Access Date (Tirana TZ): {lastModifiedDate_local}")
         logger.info(f"Time elapsed: ~{int(distanceFromAccessTime / 3600)}hrs")
         
-        CONTINUE_AGGREGATION = collectionWasAccessedB4Today
+        # CONTINUE_AGGREGATION = collectionWasAccessedB4Today
+        CONTINUE_AGGREGATION = True
             
     except FileNotFoundError:
         logger.info("An auction collection file is not present.")    
@@ -56,7 +57,7 @@ def main(start_date = datetime, end_date = datetime):
                 
             data = collector(start_date, end_date, horizon)
             with listLock:
-                all_data.append(data)
+                all_data.extend(data)
             
         with ThreadPoolExecutor(max_workers=10) as executor:
             # Caution: setting the horizon to Yearly will collect auctions based ONLY on the dates' years (JAO)
