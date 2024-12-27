@@ -2,7 +2,7 @@ import logging
 import sys
 
 def setup_logging():
-    logger = logging.getLogger("my_fastapi_app")
+    logger = logging.getLogger("capmap-agg-logger")
     logger.setLevel(logging.INFO)
 
     # Create console handler

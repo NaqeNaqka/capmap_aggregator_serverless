@@ -8,6 +8,8 @@ from storage3.utils import StorageException
 from logging_config import setup_logging
 logger = setup_logging()
 
+auctionsFileName = "auctions.json"
+
 def uploadToSupa():
     url = os.environ.get("SUPABASE_URL")
     key = os.environ.get("SUPABASE_KEY")
@@ -45,13 +47,27 @@ def uploadToSupa():
 
     UPSERT = "false"
     if response:
-        logger.info("File already exists. It will be overwritten by the local version.")
-        UPSERT = "true"
+        for item in response:
+            if item["name"] == auctionsFileName:
+                logger.info(f"{auctionsFileName} already exists. It will be overwritten by the local version.")
+                UPSERT = "true"
 
-        
-    auctionsFileName = "auctions.json"
+    
     logger.info("Uploading auctions...")
     with open(auctionsFileName, 'rb') as f:
+        try:
+            response = supabase.storage.from_(BUCKET_NAME).upload(
+                file=f,
+                path=auctionsFileName,
+                file_options={"cache-control": "3600", "upsert": UPSERT},
+            )
+            logger.info(response)
+        except StorageException as e:
+            SIGN_OUT()
+            raise Exception(e)
+    
+    logger.info("Uploading date ranges...")
+    with open("aggregation_range.json", 'rb') as f:
         try:
             response = supabase.storage.from_(BUCKET_NAME).upload(
                 file=f,
@@ -112,11 +128,13 @@ def checkRemoteFileDate():
         logger.info("No remote files were found.")
         return None
 
-    try:
-        responseData = response[0]["updated_at"]
-    except:
-        logger.info("No updated_at value was provided, using creation date...")
-        responseData = response[0]["created_at"]
+    for item in response:
+        if item["name"] == auctionsFileName:
+            try:
+                responseData = item["updated_at"]
+            except:
+                logger.info("No updated_at value was found, using creation date...")
+                responseData = item["created_at"]
         
     lastModifiedDate = datetime.strptime(responseData[:-1], "%Y-%m-%dT%H:%M:%S.%f")
     
@@ -133,6 +151,9 @@ def checkRemoteFileDate():
     return lastModifiedDate_local
     
 if __name__ == "__main__":
-    response = checkRemoteFileDate()
-    logger.info(response)
+    # response = checkRemoteFileDate()
+    # logger.info(response)
+    uploadToSupa()
+    
+    
     
