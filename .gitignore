@@ -3,5 +3,6 @@ venv
 .env
 auctions.json
 aggregation_range.json
+Last Stats.txt
 __pycache__
 __init__.py

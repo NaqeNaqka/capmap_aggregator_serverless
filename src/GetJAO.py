@@ -184,7 +184,6 @@ async def aggregate(horizon):
                                     all_data.append(newAuction)
 
 def getJao(start_date, end_date, horizon):
-
     if horizon == "Yearly":
         # Initialize the starting year for the loop
         current_year = start_date.year
